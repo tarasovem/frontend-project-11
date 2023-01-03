@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Собираем проект
-        run: make setup
+        run: make install
       - name: Запускаем линтер
         run: make lint
         

@@ -1,4 +1,4 @@
-setup:
+install:
 	npm ci
 
 lint:
