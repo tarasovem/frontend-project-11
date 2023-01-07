@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "My webpack project",
   "private": true,
-  "main": "index.js",
+  "main": "./scr/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode=production --node-env=production",
@@ -41,6 +41,8 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
-    "bootstrap": "^5.2.3"
+    "bootstrap": "^5.2.3",
+    "on-change": "^4.0.2",
+    "yup": "^0.32.11"
   }
 }
