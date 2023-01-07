@@ -1,8 +1,14 @@
 export default {
   ru: {
     translation: {
-      errDoubleUrl: 'RSS уже существует',
-      errNotUrl: 'Ссылка должна быть валидным URL',
+      errors: {
+        errDoubleUrl: 'RSS уже существует',
+        errNotUrl: 'Ссылка должна быть валидным URL',
+        errNotRss: 'Ресурс не содержит валидный RSS',
+      },
+      success: {
+        rssLoaded: 'Ресурс успешно загружен',
+      },
     },
   },
 };
