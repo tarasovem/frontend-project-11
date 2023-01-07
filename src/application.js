@@ -13,7 +13,9 @@ const app = () => {
     debug: true,
     resources,
   });
+
   const form = document.querySelector('.rss-form');
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const schema = string().url().nullable().notOneOf(watchedState.inputUrl.data.urls);
@@ -25,7 +27,9 @@ const app = () => {
         const [doc, validUrl] = data;
         const feedName = doc.querySelector('title').textContent;
         const feedDeskr = doc.querySelector('description').textContent;
-        const feed = { id: Math.floor(Math.random() * 100), feedName, feedDeskr };
+        const feed = {
+          id: Math.floor(Math.random() * 100), feedName, feedDeskr, feedUrl: validUrl,
+        };
         const items = doc.querySelectorAll('item');
         const arrItems = Array.from(items);
         const mappedItems = arrItems.map((item) => {
@@ -39,7 +43,6 @@ const app = () => {
           };
           return post;
         });
-        watchedState.inputUrl.data.urls.push(validUrl);
         watchedState.inputUrl.state = 'valid';
         watchedState.inputUrl.successMessage = i18nextInstance.t('success.rssLoaded');
         watchedState.feeds = [feed, ...watchedState.feeds];
@@ -63,9 +66,54 @@ const app = () => {
           watchedState.inputUrl.errors.notRss = '';
           watchedState.inputUrl.errors.notUrl = i18nextInstance.t('errors.errNotUrl');
         }
-        console.log('Error:', errors.message);
+        console.log('error!!!', errors.message);
       });
   });
+
+  const updatePosts = (state) => { // обновление постов
+    const handler = (counter = 0) => {
+      if (state.inputUrl.data.urls.length > 0) {
+        state.inputUrl.data.urls.forEach((url) => {
+          getFlowData(url)
+            .then((data) => {
+              const [doc, validUrl] = data;
+              const items = doc.querySelectorAll('item');
+              const arrItems = Array.from(items);
+              const postHeadlines = watchedState.posts.map((post) => post.postTitle);
+              const mappedItems = arrItems.map((item) => {
+                const postTitle = item.querySelector('title').textContent;
+                if (!postHeadlines.includes(postTitle)) {
+                  const actualFeed = watchedState.feeds.filter((feed) => feed.feedUrl === validUrl);
+                  const [feed] = actualFeed;
+                  const actualFeedId = feed.id;
+                  const postLink = item.querySelector('link').nextSibling.textContent.trim();
+                  const post = {
+                    id: Math.floor(Math.random() * 100),
+                    listId: actualFeedId,
+                    postTitle,
+                    postLink,
+                  };
+                  return post;
+                }
+                return null;
+              });
+              const newPosts = mappedItems.filter((elem) => elem !== null);
+              if (newPosts.length > 0) {
+                watchedState.posts = [...newPosts, ...watchedState.posts];
+                watchedState.inputUrl.errors.double = '';
+                watchedState.inputUrl.errors.inputUrl = '';
+              }
+            })
+            .catch((errors) => {
+              console.log('error!!!', errors.message);
+            });
+        });
+      }
+      setTimeout(() => handler(counter + 1), 5000);
+    };
+    handler();
+  };
+  updatePosts(watchedState);
 };
 
 export default app;

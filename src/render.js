@@ -60,6 +60,17 @@ const renderFeeds = (watchedState) => {
   divFeeds.append(ul);
   div2.append(h2);
 };
+
+const buildButton = () => {
+  const button = document.createElement('button');
+  button.setAttribute('type', 'button');
+  button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+  button.dataset.bsToggle = 'modal';
+  button.dataset.bsTarget = '#exampleModal';
+  button.textContent = 'Просмотр';
+  return button;
+};
+
 const renderPosts = (watchedState) => {
   const containerPosts = document.querySelector('.posts');
   containerPosts.innerHTML = '';
@@ -86,7 +97,9 @@ const renderPosts = (watchedState) => {
     a.setAttribute('rel', 'noopener noreferrer');
     a.dataset.id = elem.id;
     a.textContent = elem.postTitle;
+    const button = buildButton();
     li.append(a);
+    li.append(button);
     return li;
   });
   divPosts.append(ul);
