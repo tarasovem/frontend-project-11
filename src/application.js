@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './style.css';
 import i18next from 'i18next';
 import { string } from 'yup';
 import resources from './locales';
@@ -34,12 +32,14 @@ const app = () => {
         const arrItems = Array.from(items);
         const mappedItems = arrItems.map((item) => {
           const postTitle = item.querySelector('title').textContent;
-          const postLink = item.querySelector('link').nextSibling.textContent.trim();
+          const postLink = item.querySelector('link').textContent;
+          const postDescription = item.querySelector('description').textContent;
           const post = {
-            id: Math.floor(Math.random() * 100),
+            id: Math.floor(Math.random() * 10000),
             listId: feed.id,
             postTitle,
             postLink,
+            postDescription,
           };
           return post;
         });
@@ -51,9 +51,22 @@ const app = () => {
         watchedState.inputUrl.errors.double = '';
         watchedState.inputUrl.errors.inputUrl = '';
       })
+      .then(() => {
+        const buttons = document.querySelectorAll('.btn-outline-primary');
+        buttons.forEach((button) => {
+          button.addEventListener('click', (el) => {
+            const element = el.target.previousSibling;
+            watchedState.uiState = element.dataset.id;
+          });
+        });
+      })
       .catch((errors) => {
         watchedState.inputUrl.state = 'invalid';
-        if (errors.message.match(/Not RSS/)) {
+        if (errors.message.match(/Network Error/)) {
+          watchedState.inputUrl.errors.double = '';
+          watchedState.inputUrl.errors.notUrl = '';
+          watchedState.inputUrl.errors.networkError = i18nextInstance.t('errors.errNetworkError');
+        } else if (errors.message.match(/Not RSS/)) {
           watchedState.inputUrl.errors.double = '';
           watchedState.inputUrl.errors.notUrl = '';
           watchedState.inputUrl.errors.notRss = i18nextInstance.t('errors.errNotRss');
@@ -86,12 +99,14 @@ const app = () => {
                   const actualFeed = watchedState.feeds.filter((feed) => feed.feedUrl === validUrl);
                   const [feed] = actualFeed;
                   const actualFeedId = feed.id;
-                  const postLink = item.querySelector('link').nextSibling.textContent.trim();
+                  const postLink = item.querySelector('link');
+                  const postDescription = item.querySelector('description').textContent.trim();
                   const post = {
-                    id: Math.floor(Math.random() * 100),
+                    id: Math.floor(Math.random() * 10000),
                     listId: actualFeedId,
                     postTitle,
                     postLink,
+                    postDescription,
                   };
                   return post;
                 }
@@ -104,7 +119,22 @@ const app = () => {
                 watchedState.inputUrl.errors.inputUrl = '';
               }
             })
+            .then(() => {
+              const buttons = document.querySelectorAll('.btn-outline-primary');
+              buttons.forEach((button) => {
+                button.addEventListener('click', (el) => {
+                  const element = el.target.previousSibling;
+                  watchedState.uiState = element.dataset.id;
+                });
+              });
+            })
             .catch((errors) => {
+              watchedState.inputUrl.state = 'invalid';
+              if (errors.message.match(/Network Error/)) {
+                watchedState.inputUrl.errors.double = '';
+                watchedState.inputUrl.errors.notUrl = '';
+                watchedState.inputUrl.errors.networkError = i18nextInstance.t('errors.errNetworkError');
+              }
               console.log('error!!!', errors.message);
             });
         });

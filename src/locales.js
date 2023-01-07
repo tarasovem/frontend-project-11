@@ -5,9 +5,10 @@ export default {
         errDoubleUrl: 'RSS уже существует',
         errNotUrl: 'Ссылка должна быть валидным URL',
         errNotRss: 'Ресурс не содержит валидный RSS',
+        errNetworkError: 'Ошибка сети',
       },
       success: {
-        rssLoaded: 'Ресурс успешно загружен',
+        rssLoaded: 'RSS успешно загружен',
       },
     },
   },

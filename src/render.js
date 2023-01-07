@@ -9,6 +9,7 @@ const renderClearForm = () => {
   form.reset();
   input.focus();
 };
+
 const renderErrors = (watchedState) => {
   const p = document.querySelector('.text-danger') ?? document.querySelector('.text-success');
   if (watchedState.inputUrl.state === 'invalid') {
@@ -16,17 +17,17 @@ const renderErrors = (watchedState) => {
     input.style.border = 'medium solid red';
     p.textContent = '';
     p.classList.replace('text-success', 'text-danger');
-  } 
-  if (watchedState.inputUrl.errors.notUrl.match(/валидным/)) {
+  } if (watchedState.inputUrl.errors.notUrl.match(/валидным/)) {
     p.textContent = watchedState.inputUrl.errors.notUrl;
-  } 
-  if (watchedState.inputUrl.errors.double.match(/существует/)) {
+  } if (watchedState.inputUrl.errors.double.match(/существует/)) {
     p.textContent = watchedState.inputUrl.errors.double;
-  } 
-  if (watchedState.inputUrl.errors.notRss.match(/RSS/)) {
+  } if (watchedState.inputUrl.errors.notRss.match(/RSS/)) {
     p.textContent = watchedState.inputUrl.errors.notRss;
+  } if (watchedState.inputUrl.errors.networkError.match(/сети/)) {
+    p.textContent = watchedState.inputUrl.errors.networkError;
   }
 };
+
 const renderFeeds = (watchedState) => {
   const successText = document.querySelector('.text-danger') ?? document.querySelector('.text-success');
   successText.classList.replace('text-danger', 'text-success'); // следить, чтобы было ок
@@ -66,9 +67,26 @@ const buildButton = () => {
   button.setAttribute('type', 'button');
   button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
   button.dataset.bsToggle = 'modal';
-  button.dataset.bsTarget = '#exampleModal';
+  button.dataset.bsTarget = '#modal';
   button.textContent = 'Просмотр';
   return button;
+};
+
+const addTextInModal = (watchedState) => {
+  const postId = watchedState.uiState;
+  const a = document.querySelector(`a[data-id="${postId}"]`);
+  const currentPostData = watchedState.posts.filter((elem) => elem.id === Number(postId));
+  const currentPostTitle = currentPostData[0].postTitle;
+  const currentPostDescription = currentPostData[0].postDescription;
+  const currentPostLink = currentPostData[0].postLink;
+  const popupTitle = document.querySelector('.modal-title');
+  popupTitle.textContent = currentPostTitle;
+  const popupDescription = document.querySelector('.modal-body');
+  popupDescription.textContent = currentPostDescription;
+  const postLink = document.querySelector('.full-article');
+  postLink.setAttribute('href', currentPostLink);
+  a.classList.replace('fw-bold', 'fw-normal');
+  a.classList.add('link-secondary');
 };
 
 const renderPosts = (watchedState) => {
@@ -97,6 +115,10 @@ const renderPosts = (watchedState) => {
     a.setAttribute('rel', 'noopener noreferrer');
     a.dataset.id = elem.id;
     a.textContent = elem.postTitle;
+    a.addEventListener('click', () => {
+      a.classList.replace('fw-bold', 'fw-normal');
+      a.classList.add('link-secondary');
+    });
     const button = buildButton();
     li.append(a);
     li.append(button);
@@ -105,6 +127,7 @@ const renderPosts = (watchedState) => {
   divPosts.append(ul);
   return newPosts;
 };
+
 const state = {
   inputUrl: {
     state: '',
@@ -115,12 +138,15 @@ const state = {
       double: '',
       notUrl: '',
       notRss: '',
+      networkError: '',
     },
     successMessage: '',
   },
   feeds: [],
   posts: [],
+  uiState: '',
 };
+
 const watchedState = onChange(state, (path, value) => {
   switch (value) {
     case 'valid':
@@ -131,6 +157,7 @@ const watchedState = onChange(state, (path, value) => {
     case 'RSS уже существует':
     case 'Ссылка должна быть валидным URL':
     case 'Ресурс не содержит валидный RSS':
+    case 'Ошибка сети':
       renderErrors(watchedState);
       break;
 
@@ -145,6 +172,10 @@ const watchedState = onChange(state, (path, value) => {
 
     case 'posts':
       renderPosts(watchedState);
+      break;
+
+    case 'uiState':
+      addTextInModal(watchedState);
       break;
 
     default:
