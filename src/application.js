@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import { string } from 'yup';
+import uniqid from 'uniqid';
 import resources from './locales';
 import { watchedState } from './render.js';
 import getFlowData from './parser.js';
@@ -22,26 +23,21 @@ const app = () => {
     schema.validate(url)
       .then((validUrl) => getFlowData(validUrl))
       .then((data) => {
-        const [doc, validUrl] = data;
-        const feedName = doc.querySelector('title').textContent;
-        const feedDeskr = doc.querySelector('description').textContent;
+        const {items, feedName, feedDescr, url: validUrl} = data;
         const feed = {
-          id: Math.floor(Math.random() * 100), feedName, feedDeskr, feedUrl: validUrl,
+          id: uniqid(), feedName, feedDescr, feedUrl: validUrl,
         };
-        const items = doc.querySelectorAll('item');
-        const arrItems = Array.from(items);
-        const mappedItems = arrItems.map((item) => {
+        const mappedItems = items.map((item) => {
           const postTitle = item.querySelector('title').textContent;
           const postLink = item.querySelector('link').textContent;
           const postDescription = item.querySelector('description').textContent;
-          const post = {
-            id: Math.floor(Math.random() * 10000),
+          return {
+            id: uniqid(),
             listId: feed.id,
             postTitle,
             postLink,
             postDescription,
           };
-          return post;
         });
         watchedState.inputUrl.state = 'valid';
         watchedState.inputUrl.successMessage = i18nextInstance.t('success.rssLoaded');
@@ -84,16 +80,14 @@ const app = () => {
   });
 
   const updatePosts = (state) => { // обновление постов
-    const handler = (counter = 0) => {
+    const handler = () => {
       if (state.inputUrl.data.urls.length > 0) {
         state.inputUrl.data.urls.forEach((url) => {
           getFlowData(url)
             .then((data) => {
-              const [doc, validUrl] = data;
-              const items = doc.querySelectorAll('item');
-              const arrItems = Array.from(items);
+              const {items, url: validUrl} = data;
               const postHeadlines = watchedState.posts.map((post) => post.postTitle);
-              const mappedItems = arrItems.map((item) => {
+              const mappedItems = items.map((item) => {
                 const postTitle = item.querySelector('title').textContent;
                 if (!postHeadlines.includes(postTitle)) {
                   const actualFeed = watchedState.feeds.filter((feed) => feed.feedUrl === validUrl);
@@ -101,14 +95,13 @@ const app = () => {
                   const actualFeedId = feed.id;
                   const postLink = item.querySelector('link');
                   const postDescription = item.querySelector('description').textContent.trim();
-                  const post = {
-                    id: Math.floor(Math.random() * 10000),
+                  return {
+                    id: uniqid(),
                     listId: actualFeedId,
                     postTitle,
                     postLink,
                     postDescription,
                   };
-                  return post;
                 }
                 return null;
               });
@@ -139,7 +132,7 @@ const app = () => {
             });
         });
       }
-      setTimeout(() => handler(counter + 1), 5000);
+      setTimeout(handler, 5000);
     };
     handler();
   };

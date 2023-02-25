@@ -75,7 +75,7 @@ const buildButton = () => {
 const addTextInModal = (watchedState) => {
   const postId = watchedState.uiState;
   const a = document.querySelector(`a[data-id="${postId}"]`);
-  const currentPostData = watchedState.posts.filter((elem) => elem.id === Number(postId));
+  const currentPostData = watchedState.posts.filter((elem) => elem.id === postId);
   const currentPostTitle = currentPostData[0].postTitle;
   const currentPostDescription = currentPostData[0].postDescription;
   const currentPostLink = currentPostData[0].postLink;
