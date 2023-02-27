@@ -79,62 +79,60 @@ const app = () => {
       });
   });
 
-  const updatePosts = (state) => { // обновление постов
-    const handler = () => {
-      if (state.inputUrl.data.urls.length > 0) {
-        state.inputUrl.data.urls.forEach((url) => {
-          getFlowData(url)
-            .then((data) => {
-              const {items, url: validUrl} = data;
-              const postHeadlines = watchedState.posts.map((post) => post.postTitle);
-              const mappedItems = items.map((item) => {
-                const postTitle = item.querySelector('title').textContent;
-                if (!postHeadlines.includes(postTitle)) {
-                  const actualFeed = watchedState.feeds.filter((feed) => feed.feedUrl === validUrl);
-                  const [feed] = actualFeed;
-                  const actualFeedId = feed.id;
-                  const postLink = item.querySelector('link');
-                  const postDescription = item.querySelector('description').textContent.trim();
-                  return {
-                    id: uniqid(),
-                    listId: actualFeedId,
-                    postTitle,
-                    postLink,
-                    postDescription,
-                  };
-                }
-                return null;
-              });
-              const newPosts = mappedItems.filter((elem) => elem !== null);
-              if (newPosts.length > 0) {
-                watchedState.posts = [...newPosts, ...watchedState.posts];
-                watchedState.inputUrl.errors.double = '';
-                watchedState.inputUrl.errors.inputUrl = '';
-              }
-            })
-            .then(() => {
-              const buttons = document.querySelectorAll('.btn-outline-primary');
-              buttons.forEach((button) => {
-                button.addEventListener('click', (el) => {
-                  const element = el.target.previousSibling;
-                  watchedState.uiState = element.dataset.id;
-                });
-              });
-            })
-            .catch((errors) => {
-              watchedState.inputUrl.state = 'invalid';
-              if (errors.message.match(/Network Error/)) {
-                watchedState.inputUrl.errors.double = '';
-                watchedState.inputUrl.errors.notUrl = '';
-                watchedState.inputUrl.errors.networkError = i18nextInstance.t('errors.errNetworkError');
-              }
-              console.log('error!!!', errors.message);
+  const updatePosts = (state) => {
+    console.log('1');
+    state.inputUrl.data.urls.forEach((url) => {
+      getFlowData(url)
+        .then((data) => {
+          const {items, url: validUrl} = data;
+          const postHeadlines = watchedState.posts.map((post) => post.postTitle);
+          const mappedItems = items.map((item) => {
+            const postTitle = item.querySelector('title').textContent;
+            if (!postHeadlines.includes(postTitle)) {
+              const actualFeed = watchedState.feeds.filter((feed) => feed.feedUrl === validUrl);
+              const [feed] = actualFeed;
+              const actualFeedId = feed.id;
+              const postLink = item.querySelector('link');
+              const postDescription = item.querySelector('description').textContent.trim();
+              return {
+                id: uniqid(),
+                listId: actualFeedId,
+                postTitle,
+                postLink,
+                postDescription,
+              };
+            }
+            return null;
+          });
+          const newPosts = mappedItems.filter((elem) => elem !== null);
+          if (newPosts.length > 0) {
+            watchedState.posts = [...newPosts, ...watchedState.posts];
+            watchedState.inputUrl.errors.double = '';
+            watchedState.inputUrl.errors.inputUrl = '';
+          }
+        })
+        .then(() => {
+          const buttons = document.querySelectorAll('.btn-outline-primary');
+          buttons.forEach((button) => {
+            button.addEventListener('click', (el) => {
+              const element = el.target.previousSibling;
+              watchedState.uiState = element.dataset.id;
             });
+          });
+        })
+        .catch((errors) => {
+          watchedState.inputUrl.state = 'invalid';
+          if (errors.message.match(/Network Error/)) {
+            watchedState.inputUrl.errors.double = '';
+            watchedState.inputUrl.errors.notUrl = '';
+            watchedState.inputUrl.errors.networkError = i18nextInstance.t('errors.errNetworkError');
+          }
+          console.log('error!!!', errors.message);
+        })
+        .finally((errors) => {
+          setTimeout(() => console.log("It's works!"), 5000);
         });
-      }
-      setTimeout(handler, 5000);
-    };
-    handler();
+    });
   };
   updatePosts(watchedState);
 };
