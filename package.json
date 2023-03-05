@@ -1,7 +1,7 @@
 {
-  "name": "my-webpack-project",
+  "name": "@hexlet/code",
   "version": "1.0.0",
-  "description": "My webpack project",
+  "description": "RSS aggregator",
   "private": true,
   "main": "./scr/index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "url": "git+https://github.com/tarasovem/frontend-project-11.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Evgeniy Tarasov",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/tarasovem/frontend-project-11/issues"

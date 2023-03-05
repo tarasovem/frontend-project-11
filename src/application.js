@@ -16,8 +16,10 @@ const getData = (url) => {
 
 const addIds = (posts, feedId) => {
   posts.forEach((post) => {
-    post.id = uniqueId();
-    post.feedId = feedId;
+    const modifiedPost = post;
+    modifiedPost.id = uniqueId();
+    modifiedPost.feedId = feedId;
+    return modifiedPost;
   });
 };
 

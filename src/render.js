@@ -77,7 +77,8 @@ const createList = (itemsType, state, i18next) => {
   return card;
 };
 
-const renderInvalid = ({ submit, urlInput, feedback }) => {
+const renderInvalid = (elements) => {
+  const { submit, urlInput, feedback } = elements;
   submit.disabled = false;
   urlInput.classList.add('is-invalid');
   feedback.classList.remove('text-success');
@@ -85,7 +86,8 @@ const renderInvalid = ({ submit, urlInput, feedback }) => {
   feedback.classList.add('text-danger');
 };
 
-const renderSending = ({ submit, urlInput, feedback }, i18next) => {
+const renderSending = (elements, i18next) => {
+  const { submit, urlInput, feedback } = elements;
   submit.disabled = true;
   urlInput.classList.remove('is-invalid');
   feedback.classList.remove('text-danger');
@@ -94,9 +96,10 @@ const renderSending = ({ submit, urlInput, feedback }, i18next) => {
   feedback.textContent = i18next.t('status.sending');
 };
 
-const renderAdded = ({
-                       submit, urlInput, feedback, form,
-                     }, i18next) => {
+const renderAdded = (elements, i18next) => {
+  const {
+    submit, urlInput, feedback, form,
+  } = elements;
   submit.disabled = false;
   urlInput.classList.remove('is-invalid');
   feedback.classList.remove('text-danger');
@@ -124,28 +127,32 @@ const renderState = (elements, i18next, value) => {
   }
 };
 
-const renderError = (state, { feedback }, i18next, error) => {
+const renderError = (state, elements, i18next, error) => {
   if (error === null) {
     return;
   }
+  const { feedback } = elements;
 
   feedback.classList.add('text-danger');
   feedback.textContent = i18next.t(`errors.${state.error}`);
 };
 
-const renderFeeds = (state, { feedsList }, i18next) => {
+const renderFeeds = (state, elements, i18next) => {
+  const { feedsList } = elements;
   feedsList.innerHTML = '';
   const feeds = createList('feeds', state, i18next);
   feedsList.append(feeds);
 };
 
-const renderPosts = (state, { postsList }, i18next) => {
+const renderPosts = (state, elements, i18next) => {
+  const { postsList } = elements;
   postsList.innerHTML = '';
   const posts = createList('posts', state, i18next);
   postsList.append(posts);
 };
 
-const renderDisplayedPost = (state, { modalHeader, modalBody, modalHref }, post) => {
+const renderDisplayedPost = (state, elements, post) => {
+  const { modalHeader, modalBody, modalHref } = elements;
   modalHeader.textContent = post.title;
   modalBody.textContent = post.description;
   modalHref.setAttribute('href', post.link);
