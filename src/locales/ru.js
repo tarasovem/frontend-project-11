@@ -16,5 +16,8 @@ export default {
       feeds: 'Фиды',
       posts: 'Посты',
     },
+    elems: {
+      showModalBtn: 'Просмотр',
+    },
   },
 };

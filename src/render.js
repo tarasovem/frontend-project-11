@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 const createFeeds = (state) => {
   const feeds = [];
   state.feeds.forEach((feed) => {
@@ -16,18 +18,18 @@ const createFeeds = (state) => {
   return feeds;
 };
 
-const createButton = (post) => {
+const createButton = (post, i18next) => {
   const buttonEl = document.createElement('button');
   buttonEl.setAttribute('type', 'button');
   buttonEl.setAttribute('data-id', post.id);
   buttonEl.setAttribute('data-bs-toggle', 'modal');
   buttonEl.setAttribute('data-bs-target', '#modal');
   buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-  buttonEl.textContent = 'Просмотр';
+  buttonEl.textContent = i18next.t('elems.showModalBtn');
   return buttonEl;
 };
 
-const createPosts = (state) => {
+const createPosts = (state, i18next) => {
   const posts = [];
   state.posts.forEach((post) => {
     const liEl = document.createElement('li');
@@ -43,7 +45,7 @@ const createPosts = (state) => {
       aEl.classList.add('fw-bold');
     }
     aEl.textContent = post.title;
-    const buttonEl = createButton(post);
+    const buttonEl = createButton(post, i18next);
     liEl.append(aEl);
     liEl.append(buttonEl);
     posts.push(liEl);
@@ -68,7 +70,7 @@ const createList = (itemsType, state, i18next) => {
       list.append(...createFeeds(state));
       break;
     case 'posts':
-      list.append(...createPosts(state));
+      list.append(...createPosts(state, i18next));
       break;
     default:
       break;
