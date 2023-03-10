@@ -114,7 +114,7 @@ const app = () => {
         schema.validate(input)
           .then(() => {
             watchedState.error = null;
-            watchedState.formState = 'sending';
+            watchedState.formState = 'valid';
             return getData(input);
           })
           .then((response) => {
